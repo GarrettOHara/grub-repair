@@ -123,3 +123,78 @@ sudo grub-install /dev/nvme0n1 --modules="luks cryptodisk"
 sudo vim /etc/default/grub
 update-grub
 ```
+
+# Boot Encrypted LUKS Drive from GRUB CLI
+
+### Step 1: Boot to the GRUB Command Line
+
+Reboot your system.
+
+When the GRUB menu appears, press `c` to enter the GRUB command line (CLI).
+
+### Step 2: Identify the Encrypted Partition
+
+You need to identify the encrypted partition by its GRUB device name (e.g., (hd0,gpt1)). If you're unsure of the correct device, you can list all available devices using:
+
+```bash
+ls
+```
+
+This will show the available drives and partitions in the format (hdX,gptY). Replace X and Y with the correct numbers for your setup.
+
+### Step 3: Use cryptomount to Decrypt the Partition
+
+To decrypt the LUKS-encrypted partition, use the cryptomount command followed by the device name. For example:
+
+```bash
+cryptomount (hd0,gpt1)
+```
+
+GRUB will prompt you to enter the passphrase for the LUKS-encrypted partition. Enter the passphrase, and GRUB will unlock the partition.
+
+### Step 4: Verify the Decrypted Partition
+
+Once the partition is decrypted, you can list the available devices again using ls. You should see a new device named something like `crypto0`, which represents the decrypted partition:
+
+```bash
+ls
+```
+
+You can explore the decrypted partition with commands like:
+
+```bash
+ls (crypto0)/
+```
+
+### Step 5: Boot the Decrypted Partition
+
+If your system's root partition is on the decrypted partition, you can now boot it. For example, to boot the Linux kernel from the decrypted partition:
+
+Set the root to the decrypted partition:
+
+```
+set root=(crypto0)
+```
+
+Load the Linux kernel and the initial RAM disk (initrd):
+
+```bash
+linux /vmlinuz root=/dev/mapper/cryptroot ro
+initrd /initrd.img
+```
+
+Replace `/vmlinuz` and `/initrd.img` with the correct paths for your system if necessary. You can find these paths using the ls command inside the decrypted partition.
+
+Boot the system:
+
+```bash
+boot
+```
+
+If everything is set up correctly, your system should boot from the decrypted partition.
+
+***Note:***
+If you need to automate this process, make sure your GRUB configuration (/boot/grub/grub.cfg) includes the appropriate commands to decrypt the partition automatically during boot, as described in earlier steps with `GRUB_ENABLE_CRYPTODISK=y`.
+
+The `cryptomount` command is only available if the luks and cryptodisk modules are loaded, which should be ensured during the GRUB installation or by preloading them in the configuration.
+
