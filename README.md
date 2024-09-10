@@ -119,7 +119,7 @@ GRUB_PRELOAD_MODULES="luks cryptodisk"
 ```
 
 ```bash
-grub-install /dev/nvme0n1 --modules="luks cryptodisk" --target=x86_64-efi --bootloader-id=GRUB
+grub-install /dev/nvme0n1 --modules="luks cryptodisk" --target=x86_64-efi --efi-directory=/boot/efi --bootloader-id=GRUB --recheck --boot-directory=/boot/efi/EFI
 sudo vim /etc/default/grub
 update-grub
 ```
