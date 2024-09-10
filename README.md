@@ -83,7 +83,7 @@ However, even if you preload the `luks` and `cryptodisk` modules during installa
 Install GRUB with `LUKS` and `cryptodisk` modules preloaded:
 
 ```bash
-sudo grub-install /dev/nvme0n1 --modules="luks cryptodisk"
+grub-install /dev/nvme0n1 --modules="luks cryptodisk" --target=x86_64-efi --bootloader-id=GRUB
 ```
 
 Edit `/etc/default/grub` to enable `cryptodisk`:
@@ -119,7 +119,7 @@ GRUB_PRELOAD_MODULES="luks cryptodisk"
 ```
 
 ```bash
-sudo grub-install /dev/nvme0n1 --modules="luks cryptodisk"
+grub-install /dev/nvme0n1 --modules="luks cryptodisk" --target=x86_64-efi --bootloader-id=GRUB
 sudo vim /etc/default/grub
 update-grub
 ```
